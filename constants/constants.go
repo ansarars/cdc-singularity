@@ -1,0 +1,72 @@
+// (c) Copyright 2022 Hewlett Packard Enterprise Development LP
+
+package constants
+
+const (
+	GLM_PASSWORD                    string = "glmPassword"
+	GLM_USER_NAME                   string = "glmUsername"
+	VOLUME                          string = "volume"
+	VOLUME_ATTACHMENT               string = "volume-attachment"
+	BASE                            int    = 10
+	BIT_SIZE                        int    = 64
+	PLUGIN_CONF_FILE                string = "/etc/hpe-data-fabric/singularity/plugin.conf"
+	ARG_KEY_INDEX                   int    = 0
+	ARG_VALUE_INDEX                 int    = 1
+	GLM_CREDENTIALS                 string = "glm_credentials"
+	VOLUME_NAME                     string = "name"
+	VOLUME_CAPACITY                 string = "capacity"
+	FLAVOR_ID                       string = "flavor_id"
+	DESCRIPTION                     string = "description"
+	CREATE                          string = "create"
+	DELETE                          string = "delete"
+	GET                             string = "get"
+	LIST                            string = "list"
+	ATTACHMENT_NAME                        = "name"
+	VOLUME_ID                              = "volume_id"
+	ATTACHMENT_ID                          = "attachment_id"
+	PASSWORD_REALM                         = "Username-Password-Authentication"
+	GRANT_PASSWORD_REALM                   = "http://auth0.com/oauth/grant-type/password-realm"
+	OPEN_ID                                = "openid"
+	LOCATION_ID                            = "location_id"
+	REST_API_VERSION                       = "/rest/v1"
+	GLM_PORTAL                             = "glmPortal"
+	MEMBERSHIP_ID                          = "membershipId"
+	MIN_ARGS_LENGTH                 int    = 1
+	STATUS_OK                       int    = 200
+	VOLUME_STATE_DELETING                  = "deleting"
+	LOG_FILE                        string = "/tmp/singularity.log"
+	CREATE_VOL_TABLE_COLUMNS        int    = 6
+	TABLE_ROWS                      int    = 1
+	LIST_TABLE_COLUMNS              int    = 3
+	DELETE_TABLE_COLUMNS            int    = 2
+	PROTOCOL_FUSE                          = "fuse"
+	CREATE_ATTACHMENT_TABLE_COL     int    = 4
+	GET_ATTACHMENT_TABLE_COL        int    = 8
+	DELETE_ATTACHMENT_TABLE_COLUMNS int    = 2
+	LIST_ATTACHMENT_TABLE_COLUMNS   int    = 4
+	FORMAT_TABLE                    string = "table"
+	FORMAT_JSON                     string = "json"
+	FORMAT_KEY                      string = "format"
+	VOLUME_FLAVORS                         = "volume-flavor"
+	FLAVOR_NAME                            = "name"
+	LIST_FLAVOR_TABLE_COLUMNS       int    = 2
+	REST_VOLUME_FLAVOR_URL          string = "rest/volumeflavors"
+	MAX_RETRY_COUNT                 int    = 5
+	MIN_RETRY_COUNT                 int    = 0
+	SLEEP_TIME                             = 5
+	GET_FLAVOR                             = "GET"
+	GLM_CLIENT_VERSION                     = "0.14.0"
+	FLAVORNAME                             = "flavor_name"
+	PASSWORD                               = "password"
+	USERNAME                               = "username"
+	REST_CAPACITYPOOLS_URL          string = "rest/capacitypools"
+	GET_CAPACITYPOOLS                      = "GET"
+	STATE_DELETED                          = "deleted"
+	MAPR_FUSE_CONF_FILE                    = "/opt/mapr/conf/fuse.conf"
+	VOLUME_ATTACHMENT_STATE_READY          = "ready"
+	PLUGIN_NAME                            = "hpe-gl-singularity-plugin"
+	PLUGIN_VERSION                         = "0.0.1"
+	AUTHOR                                 = "HPE Team"
+	PLUGIN_DESCRIPTION                     = "CLI plugin to interface Singularity with Data Fabric"
+	SESSION_TOKEN                          = "sessionToken"
+)

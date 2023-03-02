@@ -1,0 +1,182 @@
+version: 2.1
+
+common-context: &common-context
+  context: ecr-6644
+
+common-filters: &filters
+  filters:
+    tags:
+      only: /v.*/
+
+common-settings: &common
+  <<: [*common-context, *filters]
+
+
+executors:
+  go-build:
+    docker:
+      - image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/go-build:v1.17.5
+
+  singularity: 
+    docker:
+      - image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/singularity-container:v1.0.2
+
+workflows:
+  build_and_scan:
+    jobs:
+      - checkout-workspace:
+          <<: *common
+      - generate:
+          requires:
+            - checkout-workspace
+          <<: *common
+      - secret-scanning:
+          requires:
+            - generate
+          <<: *common
+      - copyright-check:
+          requires:
+            - generate
+          <<: *common
+      - unit-test:
+          requires: 
+            - generate
+          <<: *common
+      - go-lint:
+          requires: 
+            - generate
+          <<: *common
+      - generate-coverage-data:
+          requires: 
+            - unit-test
+          <<: *common
+      - build-and-publish:
+          requires: 
+           - unit-test
+          filters:
+            tags:
+              only:
+                - /.*/
+            branches:
+              ignore: /.*/
+          <<: *common
+
+jobs:
+  checkout-workspace:
+    docker:
+      - image: 657273346644.dkr.ecr.us-west-2.amazonaws.com/mirror/cimg/base:2021.05
+    steps:
+      - checkout
+      - persist_to_workspace:
+              root: ~/project
+              paths: ['.']
+  generate:
+    executor: singularity
+    steps:
+      - attach_workspace: 
+          at: ~/project
+      - restore_cache:
+          key: gopkg-v1-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run:
+          name: generate
+          command: |
+            make generate
+      - run:
+          name: download tools
+          command: |
+            make tools
+      - persist_to_workspace:
+          root: ~/project
+          paths: ['.']
+
+  secret-scanning:
+    docker:
+      - image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/secrets-scanner:v0.3.4
+    working_directory: ~/project
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Check for secrets leaked
+          command: scanner
+
+  copyright-check:
+    docker:
+      - image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/copyright-tool:v0.3.1
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Check copyrights
+          command: |
+            copyright-tool
+  go-lint:
+    executor: singularity
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          key: gopkg-v1-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run:
+          name: go-lint
+          command: |
+            make lint
+
+  unit-test:
+    executor: singularity
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          key: gopkg-v1-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run:
+          name: run go unit tests
+          command: |
+            make test
+  generate-coverage-data:
+    executor: singularity
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          key: gopkg-v1-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run:
+          name: generate coverage data
+          command: |
+            make coverage
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+          - coverage/
+
+  run-sonar-scanner:
+    docker:
+      - image: 657273346644.dkr.ecr.us-east-1.amazonaws.com/hpe-hcss/sonar-scanner:v0.2.5
+    working_directory: ~/project
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Run sonar-scanner
+          command: |
+            sonar-scanner
+  build-and-publish: 
+    executor: singularity
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          key: gopkg-v1-{{ checksum "go.mod" }}-{{ checksum "go.sum" }}
+      - run:
+          name: build package
+          command: |
+            make package
+
+      - run: 
+          name: publish 
+          command: |
+            tools/upload.sh
+
+
+
+
